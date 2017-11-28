@@ -1,0 +1,70 @@
+Project 2
+posted on November 15, 2017, due on December 1 at 23:59
+by email to sszpakowicz@tru.ca
+
+Info:
+Worth up to 22.5% with possible bonus.
+Late work will be accepted until Tuesday December 5, 2017 at 23:59. Penalty of 0.75% / day.
+
+
+The theme of the project is emotion analysis and takes up where homework 1 left off.
+
+The archive at <sites.google.com/site/comp498004/homework/L8.zip> contains, in separate files, words associated with several basic emotions. These lists will be your principal resource.
+
+
+Details and things to know:
+One must consider valency shifters --- those little negation words, such as "not" or "never", which you looked for in homework 1.
+
+Just as one counts polarity words, positive and negative, one can count emotion words. 
+Such a word occurs:
+- alone, not preceded by a valency shifter;
+- or in a bigram, preceded by a negation word (or maybe even two!);
+- or in a trigram --- like a bigram but with an intensifier (a strengthening or weakening modifier such as "very", "a little", "rather", "much", and so on) in the middle.
+
+
+Here comes the twist. While polarity values are naturally opposite (not positive/negative means negative/positive), there is no such opposition for the emotions which the words on those lists express. 
+
+For example, "not sad" does not mean "joyful".
+
+You will be noting twice the number of emotions, with and without a negating prefix. So, not merely two classes, but sixteen.
+
+The lists have a significant overlap. Suffice it to say that the *average* pairwise overlap is 222.5 words. (Just take this dictionary of emotion words at face value.) 
+This means that you should count exhaustively. For example, the word "sonnet" is both joyful and sad, so if you see it, increase two counts.
+
+[Trivia: the words "feeling" and "treat" are the most ambivalent, each with six appearances; "death", "epidemic", obliging", "opera" and "weight" put in five appearances each.]
+
+ 
+ 
+
+
+
+What you actually have to do:
+As your first task in this project, create a reasonable list of valency shifters and intensifiers, and try to figure out which belong with which: maybe not every combination works.
+
+Your program will analyze (count) expressions of emotion in two novels by Dickens, Eliot or Gaskell at <sites.google.com/site/comp498004/data>, and apply this analysis in a comparison between the two. Novels must be 350KB or more. 
+I may test your program on anything, so make sure not to hard-wire file names.
+
+The counting must be done by sentence. The result for a novel will be a list of sixteen counts.
+
+
+For the comparison, I will leave it to you to decide how to do it. 
+I need the statistics of each novel, including the percentage of emotion expressions in the text, the counts of emotions expression types (unigram/bigram/trigram, maybe more if you consider more), and so on. 
+
+Then come the sixteen numbers and their interpretation: which novel is more trusting, more suprised, angrier and so on. 
+
+One can also bundle emotions a little: joy and trust are on the positive side, anticipation and surprise are kind of neutral, and the other four are on the negative side. This can also be evaluated and reported.
+
+
+
+Submission:
+You will submit two text files: a program in Python and a brief document with your findings for the novels you worked with. Do not send me the texts of the novels.
+
+
+Bonus Stuff:
+I have not asked you yet to pay much attention to intensifiers, other than to consider them inside trigrams. They can, however, be useful. An emotion expression has certain strength. Suppose that every lonely emotion word counts as 1. If preceded by "very", "extremely" and so on, it may count for more, maybe 1.5; note that no negation is allowed before that intensifier, because that would be a different emotion. If preceded by "little", "hardly any" and so on, an emotion expression may count as 0.5.
+
+Be sure to think it through: which intensifiers belong with which emotions.
+
+You will also get a bonus if you compare the whole novelistic oeuvre of two authors.
+
+
