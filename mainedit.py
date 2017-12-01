@@ -66,6 +66,7 @@ def main():
 		args.textTwo = file_input('> Enter text two name [.txt]: ')
 
 	emotion_words_dict = defaultdict(list)
+	emotions_list = []
 	directory = os.fsencode(args.emotions)
 	
 	for file in os.listdir(directory):
@@ -73,6 +74,7 @@ def main():
 		if filename.endswith(".txt"):
 			emotion = filename[:-4]
 			fullFilename = args.emotions + '\/' + filename
+			emotions_list.append(emotion)
 			with open(fullFilename, 'r') as x:
 				data = x.read().splitlines()
 				for item in data:
@@ -118,39 +120,37 @@ def main():
 	print("> Filtering " + args.textTwo + " emotion sentences")
 	emotion_sentences[args.textTwo] = filter_text(text_two_tokenized_sentences, emotion_words_dict)
 	
-	preparsed_sentences = defaultdict(list)
+	preparsed_sentences = preparse(emotion_sentences, emotion_words_dict)
 	
-	for text in emotion_sentences:
-		for sentence in emotion_sentences[text]:
-			reversedSentence = sentence[::-1]
-			trimmedSentence = []
-			currentindex = 0
-			for word in reversedSentence:
-				# print(word)
-				if word in emotion_words_dict:
-					sentLen = len(reversedSentence)
-					numwordstouse = 5
-					if abs(sentLen - currentindex) < 5:
-						numwordstouse = abs(sentLen - currentindex)
-					sindex = currentindex + numwordstouse
-					splitSentence = reversedSentence[currentindex:sindex]
-					
-					cleanedSplit = []
-					cleanedSplit.append(splitSentence[0])
-					
-					for i in range(1,len(splitSentence)):
-						if splitSentence[i] not in emotion_words_dict:
-							cleanedSplit.append(splitSentence[i])
-						else:
-							break
-					preparsed_sentences[text].append(cleanedSplit)
-				currentindex += 1
-				
 	# print(preparsed_sentences)
-	text_metrics = defaultdict(lambda: defaultdict(int))
+	text_metrics = doparse(preparsed_sentences, negations, intensifiers, emotion_words_dict)
 	
-	for text in preparsed_sentences:
-		for sentence in preparsed_sentences[text]:
+	tabulize(text_metrics, emotions_list)
+
+'''
+#=============================================#
+#                  Functions                  #
+#=============================================#
+'''
+
+def tabulize(metrics, emotions):
+	for text in metrics:
+		print('> #======== ' + text + ' ========#')
+		print('> Unigrams: ' + str(metrics[text]['unigrams']))
+		print('> Bigrams: ' + str(metrics[text]['bigrams']))
+		print('> Trigrams: ' + str(metrics[text]['trigrams']))
+		print('> #======== Emotions ========#')
+		for e in emotions:
+			notemotion = 'not ' + e
+			print('> ' + e + ': ' + str(metrics[text][e]) + ' | ' + notemotion + ': ' + str(metrics[text][notemotion]))
+
+def compare():
+	continue
+
+def doparse(preparsed, negations, intensifiers, edict):
+	text_metrics = defaultdict(lambda: defaultdict(int))
+	for text in preparsed:
+		for sentence in preparsed[text]:
 			# Check if valency shifter or nothing
 			# if not unigram
 			if len(sentence) > 1:
@@ -182,16 +182,9 @@ def main():
 							# add space for next item
 							wombocombo += ' '
 				sorted(indices)
-				#for i in indices.keys():
-				#	print(str(i) + ' , ' + sentence[i] + ' | ', end='')
-				#print('\n',end='')	
-				
-				# indiceacceptedtypes = ['E','ES','EIS','EISS','EIIS','EIISS','EIIIS', 'EIIISS']
 				indiceunigramtypes = ['E', 'EI', 'EII', 'EIII', 'EIIII', 'EIIIII']
 				indicebigramtypes = ['ES', 'ESI', 'ESII', 'ESIII', 'ESIIII']
-				indicetrigramtypes = ['EIS', 'EISS', 'EIIS', 'EIISS', 'EIIIS', 'EIIISS', 'EIIIIS']
-				# E - pos, ES - neg, EIS - neg, EISS - both, EIIS - neg, EIISS - both
-				
+				indicetrigramtypes = ['EIS', 'EISS', 'EIIS', 'EIISS', 'EIIIS', 'EIIISS', 'EIIIIS']			
 				checkable = ''
 				for i in range(0,len(indices)):
 					if indices[i] != 'X':
@@ -199,35 +192,59 @@ def main():
 					else:
 						if checkable in indicetrigramtypes:
 							# trigram
-							emotions = emotion_words_dict[sentence[0]]
+							emotions = edict[sentence[0]]
 							for e in emotions:
 								text_metrics[text]['not ' + e] += 1
 							text_metrics[text]['trigrams'] += 1
 						elif checkable in indicebigramtypes:
 							# bigram
-							emotions = emotion_words_dict[sentence[0]]
+							emotions = edict[sentence[0]]
 							for e in emotions:
 								text_metrics[text]['not ' + e] += 1
 							text_metrics[text]['bigrams'] += 1
 						elif checkable in indiceunigramtypes:
 							# unigram
-							emotions = emotion_words_dict[sentence[0]]
+							emotions = edict[sentence[0]]
 							for e in emotions:
 								text_metrics[text][e] += 1
 							text_metrics[text]['unigrams'] += 1
 						break
 			else:
 				# unigram
-				emotions = emotion_words_dict[sentence[0]]
+				emotions = edict[sentence[0]]
 				for e in emotions:
 					text_metrics[text][e] += 1
 				text_metrics[text]['unigrams'] += 1
-	print(text_metrics)
-'''
-#=============================================#
-#                  Functions                  #
-#=============================================#
-'''
+	return text_metrics
+
+def preparse(e, d):
+	preparsed_sentences = defaultdict(list)
+	for text in e:
+		for sentence in e[text]:
+			reversedSentence = sentence[::-1]
+			trimmedSentence = []
+			currentindex = 0
+			for word in reversedSentence:
+				# print(word)
+				if word in d:
+					sentLen = len(reversedSentence)
+					numwordstouse = 5
+					if abs(sentLen - currentindex) < 5:
+						numwordstouse = abs(sentLen - currentindex)
+					sindex = currentindex + numwordstouse
+					splitSentence = reversedSentence[currentindex:sindex]
+					
+					cleanedSplit = []
+					cleanedSplit.append(splitSentence[0])
+					
+					for i in range(1,len(splitSentence)):
+						if splitSentence[i] not in d:
+							cleanedSplit.append(splitSentence[i])
+						else:
+							break
+					preparsed_sentences[text].append(cleanedSplit)
+				currentindex += 1
+	return preparsed_sentences
 
 def tokenize(t):
 	sentences = nltk.sent_tokenize(open(t).read().replace('\n', ' ').replace('--', ' '))
