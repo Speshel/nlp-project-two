@@ -126,6 +126,7 @@ def main():
 	text_metrics = doparse(preparsed_sentences, negations, intensifiers, emotion_words_dict)
 	
 	tabulize(text_metrics, emotions_list)
+	compare(args.textOne, args.textTwo, text_metrics, emotions_list)
 
 '''
 #=============================================#
@@ -144,8 +145,19 @@ def tabulize(metrics, emotions):
 			notemotion = 'not ' + e
 			print('> ' + e + ': ' + str(metrics[text][e]) + ' | ' + notemotion + ': ' + str(metrics[text][notemotion]))
 
-def compare():
-	continue
+def compare(t1, t2, metrics, emotions):
+	print('> #======== Comparison ========#')
+	for e in emotions:
+		if (metrics[t1][e] > metrics[t2][e]):
+			print('> ' + t1 + ' is more ' + e)
+		else:
+			print('> ' + t2 + ' is more ' + e)
+	for e in emotions:
+		notemotion = 'not ' + e
+		if (metrics[t1][notemotion] > metrics[t2][notemotion]):
+			print('> ' + t1 + ' is more ' + notemotion)
+		else:
+			print('> ' + t2 + ' is more ' + notemotion)
 
 def doparse(preparsed, negations, intensifiers, edict):
 	text_metrics = defaultdict(lambda: defaultdict(int))
