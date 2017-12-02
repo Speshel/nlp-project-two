@@ -136,6 +136,7 @@ def main():
 
 def tabulize(metrics, emotions):
 	for text in metrics:
+		print()
 		print('> #======== ' + text + ' ========#')
 		print('> Unigrams: ' + str(metrics[text]['unigrams']))
 		print('> Bigrams: ' + str(metrics[text]['bigrams']))
@@ -144,6 +145,8 @@ def tabulize(metrics, emotions):
 		for e in emotions:
 			notemotion = 'not ' + e
 			print('> ' + e + ': ' + str(metrics[text][e]) + ' | ' + notemotion + ': ' + str(metrics[text][notemotion]))
+
+	print()
 
 def compare(t1, t2, metrics, emotions):
 	print('> #======== Comparison ========#')
@@ -259,6 +262,7 @@ def preparse(e, d):
 	return preparsed_sentences
 
 def tokenize(t):
+	print("> Token Count (" + t + "): " + str(len(nltk.word_tokenize(open(t).read().replace('\n', ' ').replace('--', ' ')))))
 	sentences = nltk.sent_tokenize(open(t).read().replace('\n', ' ').replace('--', ' '))
 	tok_sent = []
 	for sentence in sentences:
